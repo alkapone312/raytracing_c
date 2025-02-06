@@ -1,46 +1,49 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
-#include <time.h>
-#include "image.h"
 #include "utils.h"
-#include "vector.h"
-#include "render.h"
+#include "raytracer.h"
 
-#define WIDTH 400
-#define HEIGHT 400
-
-int main() {
-    srand(time(NULL));
-    Sphere spheres[] = {
-        (Sphere) {0, 0, -5, COLOR_RED, 1},
-        (Sphere) {0, -100, -5, COLOR_GREEN, 99},
-    };
-
-    Camera camera = {
-        .position = (Vec3) {0, 0, 0},
-        .direction = (Vec3) {0, 0, 1},
-        .up = (Vec3) {0, 1, 0},
-        .fov = 90,
-        .aspect_ratio = (double) WIDTH / HEIGHT
-    };
-
-    Image image = create_image(WIDTH, HEIGHT);
-    for(int i = 0 ; i < WIDTH; i++) {
-        for(int j = 0; j < HEIGHT; j++) {
-            float r = 0, g = 0, b = 0;
-            for(int k = 0; k < RAYS_PER_PIXEL; k++) {
-                Ray ray = create_ray(camera, (double) i / WIDTH, (double) j / HEIGHT, RAY_BLUR);
-                Color c = cast_ray(ray, spheres, 2);
-                r += (float) c.red / RAYS_PER_PIXEL;
-                g += (float) c.green / RAYS_PER_PIXEL;
-                b += (float) c.blue / RAYS_PER_PIXEL;
-            }
-            set_pixel(image, i, j, COLOR(r, g, b, 255));
+double depth = 0;
+Color cast_ray(const Ray ray, Scene* scene) {
+    const double light_intensity = 1;
+    Color final_color = COLOR_WHITE;
+    HitInfo hit = {0};
+    hit.t = INFINITY;
+    for(int i = 0 ; i < scene->count; i++) {
+        Object* o = (Object*) scene->objects[i];
+        if(o->hit(o, ray, &hit) == 1) {
+            Vec3 random = add(hit.normal, random_unit());
+            if(dot(random, hit.normal) > 0.0)
+                random = smul(random, -1);
+            
+            if(depth++ < MAX_DEPTH)
+                final_color = cast_ray(
+                    (Ray) {.direction = random, .starting_position = hit.intersection},
+                    scene
+                );
+            depth--;
+            
+            final_color.red /= 2;
+            final_color.green /= 2;
+            final_color.blue /= 2;
         }
     }
-    save_image_to_png("output.png", image);
 
-    destroy_image(image);
-    return 0;
+    return final_color;
+}
+
+Ray create_ray(Camera camera, double v_x, double v_y, double square) {
+    double square_x = square * drandom_mm(-1, 1);
+    double square_y = square * drandom_mm(-1, 1); 
+    const Vec3 viewport_x = unit(cross(camera.direction, camera.up));
+    const Vec3 viewport_y = unit(cross(camera.direction, viewport_x));
+    const Vec3 pixel_coord = add(
+        smul(viewport_x, (v_x - 0.5) * camera.aspect_ratio + square_x), 
+        smul(viewport_y, v_y - 0.5 + square_y)
+    );
+    const Vec3 direction = sub(add(pixel_coord, camera.direction), camera.position);
+
+    return (Ray) {
+        .starting_position = camera.position,
+        .direction = direction
+    };
 }

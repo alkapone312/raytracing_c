@@ -1,5 +1,5 @@
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef IMAGE_H_
+#define IMAGE_H_
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -37,4 +37,4 @@ Image create_image(uint64_t width, uint64_t height);
 
 void destroy_image(Image image);
 
-#endif
+#endif // IMAGE_H_

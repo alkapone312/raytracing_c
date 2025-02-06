@@ -1,5 +1,5 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef VECTOR_H_
+#define VECTOR_H_
 
 typedef struct Vec3 {
     double x;
@@ -23,4 +23,4 @@ Vec3 smul(Vec3 a, double s);
 
 Vec3 random_unit();
 
-#endif
+#endif // VECTOR_H_
