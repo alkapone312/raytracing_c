@@ -28,3 +28,4 @@ This project is licensed under the MIT License.
 ## Sample renders
 
 ![First render](./imgs/first.png)
+![Lights and colors](./imgs/lights&colors.png)

@@ -5,24 +5,39 @@
 #include "image.h"
 #include "utils.h"
 #include "sphere.h"
+#include "lights.h"
 #include "raytracer.h"
 
 #define WIDTH 400
 #define HEIGHT 400
+#define OBJECT_COUNT 3
+#define LIGHTS_COUNT 2
 
 int main() {
     srand(time(NULL));
-    Sphere s1 = SPHERE(((Vec3) {0, 0, -5}), 1);
-    Sphere s2 = SPHERE(((Vec3) {0, -100, -5}), 99);
+    Sphere s1 = SPHERE(((Material) {COLOR_GREEN}), ((Vec3) {1, 0, -5}), 0.5);
+    Sphere s2 = SPHERE(((Material) {COLOR_BLUE}), ((Vec3) {-1, 0, -5}), 0.5);
+    Sphere s3 = SPHERE(((Material) {COLOR_WHITE}), ((Vec3) {0, -100, -5}), 99);
 
-    void* objects[2] = {
-        &s1, 
-        &s2
+    PointLight l1 = POINT_LIGHT(((Vec3) {1, 2, -3}), COLOR_WHITE, 1000);
+    PointLight l2 = POINT_LIGHT(((Vec3) {-1, 2, -3}), COLOR_WHITE, 1000);
+
+    void* objects[OBJECT_COUNT] = {
+        &s1,
+        &s2,
+        &s3
+    };
+
+    void* lights[LIGHTS_COUNT] = {
+        &l1,
+        &l2
     };
 
     Scene s = {
         .objects = objects,
-        .count = 2
+        .objects_count = OBJECT_COUNT,
+        .lights = lights,
+        .lights_count = LIGHTS_COUNT
     };
 
     Camera camera = {

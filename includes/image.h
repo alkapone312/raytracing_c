@@ -37,4 +37,7 @@ Image create_image(uint64_t width, uint64_t height);
 
 void destroy_image(Image image);
 
+Color add_color(Color a, Color b);
+Color multiply_color(Color a, Color b);
+
 #endif // IMAGE_H_

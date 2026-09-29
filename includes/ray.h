@@ -11,7 +11,7 @@ typedef struct Ray {
 typedef struct HitInfo {
     Vec3 intersection;
     Vec3 normal;
-    double t;
+    double distance;
 } HitInfo;
 
 #endif // RAY_H_

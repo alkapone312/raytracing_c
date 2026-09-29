@@ -7,11 +7,16 @@
 typedef struct Sphere {
     OBJECT_HEADER
     Vec3 center;
-    int diameter;
+    double radius;
 } Sphere;
 
 bool hit_sphere(void* this, Ray, HitInfo*);
 
-#define SPHERE(c, d) (Sphere) {.hit = hit_sphere, .center = c, .diameter = d};
+#define SPHERE(m, c, r) (Sphere) { \
+    .material = m, \
+    .hit = hit_sphere, \
+    .center = c, \
+    .radius = r \
+};
 
 #endif // SPHERE_H_
