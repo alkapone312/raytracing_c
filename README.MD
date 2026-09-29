@@ -1,11 +1,12 @@
 # Simple Ray Tracing in C
 
-A basic ray tracer written in C that renders spheres with simple diffuse shading. The output is a PPM image file.
+A basic ray tracer written in C that renders spheres with simple shading. The output is a PNG image file.
 
 ## Features
 - Ray-sphere intersection
-- Diffuse shading
+- Basic shading
 - Multiple spheres
+- Multiple point lights
 - Outputs to PNG format
 
 ## Usage
@@ -20,7 +21,7 @@ A basic ray tracer written in C that renders spheres with simple diffuse shading
 3. View the generated `output.png` file.
 
 ## Customization
-Modify sphere positions, colors, and the light source in `raytracer.c` to change the scene.
+Modify sphere positions, colors, and the light source in `main.c` to change the scene.
 
 ## License
 This project is licensed under the MIT License.
