@@ -39,5 +39,6 @@ void destroy_image(Image image);
 
 Color add_color(Color a, Color b);
 Color multiply_color(Color a, Color b);
+Color scale_color(Color a, double factor);
 
 #endif // IMAGE_H_

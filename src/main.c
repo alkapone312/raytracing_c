@@ -19,8 +19,8 @@ int main() {
     Sphere s2 = SPHERE(((Material) {COLOR_BLUE}), ((Vec3) {-1, 0, -5}), 0.5);
     Sphere s3 = SPHERE(((Material) {COLOR_WHITE}), ((Vec3) {0, -100, -5}), 99);
 
-    PointLight l1 = POINT_LIGHT(((Vec3) {1, 2, -3}), COLOR_WHITE, 1000);
-    PointLight l2 = POINT_LIGHT(((Vec3) {-1, 2, -3}), COLOR_WHITE, 1000);
+    PointLight l1 = POINT_LIGHT(((Vec3) {1, 2, -3}), COLOR_WHITE, 3);
+    PointLight l2 = POINT_LIGHT(((Vec3) {-1, 2, -3}), COLOR_WHITE, 3);
 
     void* objects[OBJECT_COUNT] = {
         &s1,
@@ -54,7 +54,7 @@ int main() {
             float r = 0, g = 0, b = 0;
             for(int k = 0; k < RAYS_PER_PIXEL; k++) {
                 Ray ray = create_ray(camera, (double) i / WIDTH, (double) j / HEIGHT, RAY_BLUR);
-                Color c = cast_ray(ray, &s);
+                Color c = cast_ray(ray, &s, MAX_DEPTH);
                 r += (float) c.red / RAYS_PER_PIXEL;
                 g += (float) c.green / RAYS_PER_PIXEL;
                 b += (float) c.blue / RAYS_PER_PIXEL;

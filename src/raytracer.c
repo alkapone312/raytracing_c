@@ -1,5 +1,6 @@
 #include <math.h>
 #include "utils.h"
+#include "image.h"
 #include "raytracer.h"
 
 static Color calculate_lightning(Scene* scene, HitInfo hit) {
@@ -20,44 +21,53 @@ static Color calculate_lightning(Scene* scene, HitInfo hit) {
     return result;
 }
 
-double depth = 0;
-Color cast_ray(const Ray ray, Scene* scene) {
-    Color final_color = COLOR_BLACK;
-    HitInfo hit = {0};
-    hit.distance = INFINITY;
-    for(size_t i = 0; i < scene->objects_count; i++) {
-        Object* o = (Object*) scene->objects[i];
-        if(o->hit(o, ray, &hit) == 1) {
-            
-            // Debug normals
-            // return (Color) {
-            //     (hit.normal.x + 1.0) * 0.5 * 255.0, 
-            //     (hit.normal.y + 1.0) * 0.5 * 255.0, 
-            //     (hit.normal.z + 1.0) * 0.5 * 255.0, 
-            //     255
-            // };
+Color cast_ray(const Ray ray, Scene *scene, int depth) {
+    HitInfo closest_hit = {0};
+    closest_hit.distance = INFINITY;
 
-            Color light_color = calculate_lightning(scene, hit);
-            Color surface_color = multiply_color(light_color, o->material.base_color);
+    Object *closest_object = NULL;
 
-            Vec3 random = add(hit.normal, random_unit());
-            if (dot(random, hit.normal) > 0.0) {
-                random = smul(random, -1);
+    for (size_t i = 0; i < scene->objects_count; i++) {
+        Object *obj = (Object *)scene->objects[i];
+        HitInfo temp_hit = {0};
+        temp_hit.distance = INFINITY;
+
+        if (obj->hit(obj, ray, &temp_hit) == 1) {
+            if (temp_hit.distance > 0.0 && temp_hit.distance < closest_hit.distance) {
+                closest_hit = temp_hit;
+                closest_object = obj;
             }
-            
-            if (depth++ < MAX_DEPTH) {
-                final_color = cast_ray(
-                    (Ray) {.direction = random, .starting_position = hit.intersection},
-                    scene
-                );
-            }
-            depth--;
-
-            final_color = add_color(final_color, surface_color);
         }
     }
 
-    return final_color;
+    if (closest_object == NULL) {
+        return COLOR_BLACK;
+    }
+
+    Color light_color = calculate_lightning(scene, closest_hit);
+    Color surface_color = multiply_color(light_color, closest_object->material.base_color);
+
+    if (depth >= MAX_DEPTH) {
+        return surface_color;
+    }
+
+    Vec3 random = add(closest_hit.normal, random_unit());
+    if (dot(random, closest_hit.normal) < 0.0) {
+        random = smul(random, -1.0);
+    }
+
+    Ray bounce_ray = {
+        .starting_position = add(
+            closest_hit.intersection,
+            smul(closest_hit.normal, 0.001)
+        ),
+        .direction = random
+    };
+
+    Color bounce_color = cast_ray(bounce_ray, scene, depth + 1);
+    bounce_color = multiply_color(bounce_color, closest_object->material.base_color);
+
+    return add_color(surface_color, bounce_color);
 }
 
 Ray create_ray(Camera camera, double v_x, double v_y, double square) {

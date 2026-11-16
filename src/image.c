@@ -1,5 +1,7 @@
 #include "image.h"
 
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 int set_pixel(Image image, uint64_t x, uint64_t y, Color color) {
     if(x < 0 || y < 0 || x > image.width || y > image.height) {
         return OUT_OF_BOUNDS;
@@ -41,12 +43,12 @@ void destroy_image(Image image) {
 }
 
 Color add_color(Color a, Color b) {
-    Color result = COLOR_BLACK;
+    Color result;
 
-    result.red = (a.red + b.red) / 2;
-    result.green = (a.green + b.green) / 2;
-    result.blue = (a.blue + b.blue) / 2;
-    result.alpha = (a.alpha + b.alpha) / 2;
+    result.red = MIN(255, (int)a.red + (int)b.red);
+    result.green = MIN(255, (int)a.green + (int)b.green);
+    result.blue = MIN(255, (int)a.blue + (int)b.blue);
+    result.alpha = a.alpha;
 
     return result;
 }

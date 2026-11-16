@@ -36,7 +36,7 @@ Color calculate_point_light_contribution(void* this, Scene* scene, HitInfo hit) 
         }
     }
 
-    double attenuation = 1.0;// / (distance * distance);
+    double attenuation = 1.0 / (distance * distance);
     double factor = diffuse * attenuation * light->intensity;
 
     Color result;

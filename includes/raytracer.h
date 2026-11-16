@@ -18,6 +18,6 @@ typedef struct Camera {
 
 Ray create_ray(Camera camera, double v_x, double v_y, double square);
 
-Color cast_ray(const Ray ray, Scene* scene);
+Color cast_ray(const Ray ray, Scene* scene, int depth);
 
 #endif // RAYTRACER_H_
